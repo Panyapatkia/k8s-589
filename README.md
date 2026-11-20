@@ -1,38 +1,15 @@
-# Assignment Kubernetes Ingress – ID 589
+# Kubernetes Multi-Service & Ingress Project (ID: 68130589)
 
 **รายวิชา:** CT665 Kubernetes
-**ผู้จัดทำ:** Panyapat Sungrung  
-**รหัสนักศึกษา:** 68130589
+**ผู้จัดทำ:** Panyapat Sungrung (รหัสนักศึกษา: `68130589`)  
+**โดเมนที่ให้บริการ:** `www.id-589.com` และ `admin.id-589.com`
 ---
 
-## 1. ภาพรวมโครงงาน (Project Overview)
+## 1. สถาปัตยกรรมระบบ (Architecture)
 
-โครงงานนี้จัดทำขึ้นเพื่อศึกษาและทดลองการติดตั้ง รวมถึงการบริหารจัดการ Web Application บนระบบ Kubernetes โดยประยุกต์ใช้ Kubernetes Deployment, Service, ConfigMap, Persistent Volume (PV), Persistent Volume Claim (PVC) และ NGINX Ingress Controller เพื่อจัดการการให้บริการแอปพลิเคชันภายใน Kubernetes Cluster
+ระบบประกอบด้วย Kubernetes Cluster จำนวน 3 Nodes และ External NGINX Load Balancer จำนวน 1 เครื่อง ทำหน้าที่รับคำขอจากผู้ใช้งานและส่งต่อไปยัง NGINX Ingress Controller เพื่อกำหนดเส้นทางไปยัง Web Application แต่ละบริการตาม Domain Name และ URL Path ที่กำหนดไว้
 
-ระบบประกอบด้วย Web Application จำนวน 3 บริการ ได้แก่
-
-1. **App About:** เว็บไซต์ส่วนตัวสำหรับแสดงหน้า Dashboard และข้อมูลแนะนำตัว
-2. **App Research:** เว็บไซต์สำหรับนำเสนอข้อมูลการศึกษาและงานวิจัย พร้อมระบบจัดเก็บข้อมูลแบบ Persistent Storage
-3. **App API:** เว็บแอปพลิเคชันสำหรับทดสอบการเรียกใช้งาน API ผ่าน URL Path
-
-นอกจากนี้ยังมีการติดตั้ง External NGINX Load Balancer เพื่อรับคำขอจากผู้ใช้งานและกระจาย Traffic ไปยัง Kubernetes Worker Nodes ก่อนส่งต่อไปยัง NGINX Ingress Controller เพื่อกำหนดเส้นทางไปยังบริการต่าง ๆ ตาม Hostname และ Path ที่กำหนดไว้
-
-### วัตถุประสงค์ของโครงงาน
-
-1. เพื่อศึกษาและทดลองการติดตั้ง Web Application บน Kubernetes Cluster
-2. เพื่อศึกษาและใช้งาน Kubernetes Deployment และ Service สำหรับบริหารจัดการแอปพลิเคชัน
-3. เพื่อกำหนดเส้นทางการเข้าถึงแอปพลิเคชันผ่าน NGINX Ingress Controller
-4. เพื่อศึกษาและทดลองการจัดเก็บข้อมูลแบบ Persistent Storage ด้วย PV และ PVC
-5. เพื่อทดลองใช้งาน External NGINX Load Balancer สำหรับกระจายคำขอเข้าสู่ Kubernetes Cluster
-6. เพื่อพัฒนาสคริปต์สำหรับช่วยติดตั้งและตรวจสอบสถานะของระบบโดยอัตโนมัติ
-
----
-
-## 2. สถาปัตยกรรมระบบ (System Architecture)
-
-### 2.1 โครงสร้าง Kubernetes Cluster
-
-ระบบประกอบด้วย Kubernetes Cluster จำนวน 3 Nodes และ External NGINX Load Balancer จำนวน 1 เครื่อง
+### โครงสร้าง Kubernetes Cluster
 
 | Hostname | บทบาท | IP Address |
 |---|---|---|
@@ -41,7 +18,7 @@
 | k8s-worker2 | Worker Node 2 | 192.168.190.137 |
 | External-LB | NGINX Load Balancer | 192.168.190.200 |
 
-### 2.2 รายละเอียดสภาพแวดล้อม
+### รายละเอียดสภาพแวดล้อม
 
 | รายการ | รายละเอียด |
 |---|---|
@@ -54,15 +31,15 @@
 | HTTPS NodePort | 31502 |
 | Kubernetes Namespace | id-589 |
 
-### 2.3 แผนภาพสถาปัตยกรรมระบบ
+### แผนภาพสถาปัตยกรรมระบบ
 
 ```text
-                   Users / Web Browser
-                           |
-                           |
-                External NGINX Load Balancer
-                    192.168.190.200
-                           |
+                  Users / Web Browser
+                          |
+                          |
+               External NGINX Load Balancer
+                   192.168.190.200
+                          |
                 -------------------------
                 |                       |
            Worker Node 1           Worker Node 2
@@ -89,50 +66,19 @@
                        PVC / PV
 ```
 
----
+### การกำหนดเส้นทางการเข้าใช้งาน (Ingress Routing)
 
-## 3. รายละเอียดแอปพลิเคชัน (Application Services)
-
-ระบบประกอบด้วยแอปพลิเคชันทั้งหมด 3 บริการ โดยติดตั้งและบริหารจัดการภายใน Namespace `id-589`
-
-### 3.1 App About – เว็บไซต์แนะนำตัวและ Dashboard
-
-เป็นเว็บไซต์แบบ Static Web Application พัฒนาด้วย HTML และ CSS โดยใช้ NGINX เป็น Web Server สำหรับให้บริการหน้าเว็บไซต์
-
-ความสามารถของระบบ:
-- แสดงหน้า Dashboard หลัก
-- แสดงข้อมูลแนะนำตัว (About Me)
-- แสดงรูปโปรไฟล์
-- เชื่อมโยงไปยังบริการอื่นภายในระบบ
-
-URL สำหรับเข้าใช้งาน:
-- http://www.id-589.com/
-- http://www.id-589.com/about/
-
-### 3.2 App Research – เว็บไซต์นำเสนอข้อมูลการศึกษาและงานวิจัย
-
-เป็น Web Application ที่พัฒนาด้วย Python Flask สำหรับนำเสนอข้อมูลการศึกษาและงานวิจัย พร้อมรองรับการจัดเก็บข้อมูลผ่าน Persistent Volume Claim
-
-ความสามารถของระบบ:
-- แสดงรายละเอียดหัวข้องานวิจัย
-- แสดงแผนภาพสถาปัตยกรรมระบบ
-- มีหน้าแก้ไขข้อมูลและหน้า Admin
-- ใช้งาน Persistent Storage เพื่อจัดเก็บข้อมูล
-
-URL สำหรับเข้าใช้งาน:
-- http://www.id-589.com/research
-- http://admin.id-589.com/edit
-
-### 3.3 App API – บริการ API
-
-เป็น Web Application ที่พัฒนาด้วย Python Flask สำหรับทดสอบการเรียกใช้งาน API โดยรับข้อมูลจาก URL Path และส่งผลลัพธ์กลับไปยังผู้เรียกใช้งาน
-
-ตัวอย่าง URL:
-- http://www.id-589.com/api/Hello%20Kubernetes
+| Domain | URL Path | ปลายทาง | รายละเอียด |
+|---|---|---|---|
+| www.id-589.com | `/` | svc-about | หน้า Dashboard |
+| www.id-589.com | `/about/` | svc-about | หน้า About Me |
+| www.id-589.com | `/research` | svc-research | เว็บไซต์ Research |
+| www.id-589.com | `/api/Hello%20Kubernetes` | svc-api | บริการ API |
+| admin.id-589.com | `/edit` | svc-research | หน้า Admin |
 
 ---
 
-## 4. โครงสร้างไฟล์ของโครงงาน (Project Directory Structure)
+## 2. โครงสร้างไฟล์ใน Repository
 
 ```text
 k8s-589/
@@ -184,37 +130,29 @@ k8s-589/
 └── README.md
 ```
 
-### คำอธิบายไดเรกทอรี
+### คำอธิบายไฟล์และไดเรกทอรี
 
-| ไดเรกทอรี | รายละเอียด |
+| ไดเรกทอรี / ไฟล์ | รายละเอียด |
 |---|---|
-| `apps/` | เก็บ Source Code และไฟล์ที่ใช้พัฒนา Web Application |
-| `configs/` | เก็บไฟล์ Configuration สำหรับระบบและ Load Balancer |
+| `apps/` | เก็บ Source Code และไฟล์ที่ใช้พัฒนา Web Application ทั้ง 3 บริการ |
+| `apps/app-about/` | เว็บไซต์ Dashboard และหน้าแนะนำตัว |
+| `apps/app-api/` | Source Code สำหรับให้บริการ API ด้วย Python Flask |
+| `apps/app-research/` | Source Code สำหรับเว็บไซต์ Research ด้วย Python Flask |
+| `configs/` | เก็บไฟล์ Configuration สำหรับ Hostname และ External NGINX Load Balancer |
 | `docs/` | เก็บเอกสารประกอบโครงงานและหลักฐานการทดสอบ |
-| `k8s/` | เก็บ Kubernetes YAML Manifest สำหรับติดตั้ง Resource ต่าง ๆ |
+| `k8s/` | เก็บ Kubernetes YAML Manifest สำหรับสร้างและบริหารจัดการ Resource |
 | `scripts/` | เก็บ Shell Script สำหรับ Deploy และตรวจสอบระบบ |
+| `README.md` | เอกสารแนะนำโครงงานและขั้นตอนการใช้งาน |
 
 ---
 
-## 5. สิ่งที่ต้องเตรียมก่อนติดตั้ง (Prerequisites)
+## 3. ขั้นตอนการ Deploy ตั้งแต่ต้นจนใช้งานได้
 
-ก่อนดำเนินการติดตั้งโครงงาน จำเป็นต้องเตรียมระบบและเครื่องมือดังต่อไปนี้
+> **หมายเหตุ:** ก่อนเริ่มต้นต้องเตรียม Kubernetes Cluster ให้พร้อมใช้งาน รวมถึงติดตั้ง Flannel CNI และ NGINX Ingress Controller ให้เรียบร้อย เนื่องจาก `deploy.sh` ของโครงงานนี้ทำหน้าที่ Deploy Application Resources ไม่ได้ติดตั้ง Kubernetes Cluster หรือ Ingress Controller ให้อัตโนมัติ
 
-- Kubernetes Cluster ที่ประกอบด้วย Control Plane และ Worker Nodes
-- ติดตั้งและกำหนดค่า `kubectl` ให้สามารถเชื่อมต่อ Kubernetes Cluster ได้
-- ติดตั้ง Container Runtime โดยใช้ containerd
-- ติดตั้ง Flannel CNI สำหรับการสื่อสารระหว่าง Kubernetes Nodes
-- ติดตั้ง NGINX Ingress Controller
-- ติดตั้งและกำหนดค่า External NGINX Load Balancer
-- เตรียม Container Images ที่จำเป็นสำหรับแต่ละ Application ให้พร้อมใช้งานบน Kubernetes Nodes
+### ขั้นตอนที่ 1: ดาวน์โหลด Source Code จาก GitHub
 
----
-
-## 6. ขั้นตอนการติดตั้งและ Deploy ระบบ (Installation and Deployment)
-
-### 6.1 ดาวน์โหลด Source Code
-
-ดำเนินการ Clone Repository จาก GitHub
+ดำเนินการ Clone Repository บนเครื่อง `k8s-control`
 
 ```bash
 git clone https://github.com/Panyapatkia/k8s-589.git
@@ -222,30 +160,25 @@ git clone https://github.com/Panyapatkia/k8s-589.git
 cd k8s-589
 ```
 
-### 6.2 กำหนดค่า Hostname Resolution
+### ขั้นตอนที่ 2: เตรียมระบบและตรวจสอบ Kubernetes Cluster
 
-กำหนดค่า Hostname บนเครื่อง Client หรือ DNS Server เพื่อให้สามารถเรียกใช้งานเว็บไซต์ผ่าน Domain Name ได้
+ตรวจสอบสถานะ Kubernetes Nodes
 
-ตัวอย่างการกำหนดค่าในไฟล์ `/etc/hosts`
-
-```text
-192.168.190.200 www.id-589.com
-192.168.190.200 admin.id-589.com
+```bash
+kubectl get nodes -o wide
 ```
 
-### 6.3 กำหนดค่า External NGINX Load Balancer
+ตรวจสอบ NGINX Ingress Controller
 
-กำหนดค่า External NGINX Load Balancer เพื่อรับคำขอจากผู้ใช้งานและส่งต่อไปยัง NGINX Ingress Controller ผ่าน NodePort ของ Kubernetes Worker Nodes
-
-ไฟล์ Configuration:
-
-```text
-configs/k8s-lb.conf
+```bash
+kubectl get pods -n ingress-nginx
 ```
 
-กำหนด HTTP NodePort เป็น `31080`
+ตรวจสอบ Flannel CNI
 
-### 6.4 ดำเนินการ Deploy Kubernetes Resources
+```bash
+kubectl get pods -n kube-flannel
+```
 
 กำหนดสิทธิ์การทำงานให้กับ Shell Script
 
@@ -254,66 +187,117 @@ chmod +x scripts/deploy.sh
 chmod +x scripts/verify.sh
 ```
 
-เรียกใช้งาน Deployment Script
+### ขั้นตอนที่ 3: Deploy Kubernetes Resources
+
+ดำเนินการติดตั้ง Application และ Kubernetes Resources ด้วย Deployment Script
 
 ```bash
 ./scripts/deploy.sh
 ```
 
-สคริปต์จะดำเนินการติดตั้ง Resource ตามลำดับดังนี้
+สคริปต์จะดำเนินการตามลำดับดังนี้
 
-1. สร้าง Namespace
+1. สร้าง Namespace `id-589`
 2. ติดตั้ง Storage Resources
 3. ติดตั้ง ConfigMap สำหรับ App About
 4. Deploy App About และ Service
 5. Deploy App Research และ Service
 6. Deploy App API และ Service
 7. ติดตั้ง Ingress Resource
-8. ตรวจสอบสถานะของ Resource ภายใน Kubernetes Cluster
+8. ตรวจสอบสถานะของ Kubernetes Resources
+
+### ขั้นตอนที่ 4: กำหนดค่า External NGINX Load Balancer
+
+นำไฟล์ Configuration จาก Repository
+
+```text
+configs/k8s-lb.conf
+```
+
+ไปติดตั้งบนเครื่อง `External-LB` ที่มี IP Address `192.168.190.200` โดยกำหนดให้ NGINX รับคำขอจากผู้ใช้งานผ่าน HTTP Port 80 และส่งต่อไปยัง Kubernetes Worker Nodes ผ่าน NodePort `31080`
+
+หลังจากติดตั้งไฟล์ Configuration ให้ตรวจสอบและ Reload NGINX
+
+```bash
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+### ขั้นตอนที่ 5: กำหนดค่า Hostname Resolution
+
+กำหนดค่า Hostname บนเครื่อง Client เพื่อให้สามารถเรียกใช้งานเว็บไซต์ผ่าน Domain Name ได้
+
+**บน Linux:** แก้ไขไฟล์ `/etc/hosts`
+
+```text
+192.168.190.200 www.id-589.com admin.id-589.com
+```
+
+**บน Windows:** แก้ไขไฟล์
+
+```text
+C:\Windows\System32\drivers\etc\hosts
+```
+
+เพิ่มรายการดังนี้
+
+```text
+192.168.190.200 www.id-589.com admin.id-589.com
+```
+
+### ขั้นตอนที่ 6: ทดสอบการเข้าใช้งานเว็บไซต์
+
+เปิด Web Browser และทดสอบเข้าใช้งานผ่าน Domain Name ที่กำหนดไว้
+
+- `http://www.id-589.com/`
+- `http://www.id-589.com/about/`
+- `http://www.id-589.com/research`
+- `http://www.id-589.com/api/Hello%20Kubernetes`
+- `http://admin.id-589.com/edit`
 
 ---
 
-## 7. การตรวจสอบระบบ (System Verification)
+## 4. การตรวจสอบการทำงาน (Verification)
 
-หลังจากดำเนินการ Deploy เรียบร้อยแล้ว สามารถตรวจสอบสถานะของระบบได้ด้วยคำสั่งต่อไปนี้
+ดำเนินการตรวจสอบสถานะของระบบหลังจาก Deploy เรียบร้อยแล้ว โดยสามารถใช้คำสั่งต่อไปนี้บนเครื่อง `k8s-control`
 
-### 7.1 ตรวจสอบสถานะ Kubernetes Nodes
+### ตรวจสอบสถานะ Kubernetes Nodes
 
 ```bash
 kubectl get nodes -o wide
 ```
 
-### 7.2 ตรวจสอบ Deployment และ Pods
+### ตรวจสอบ Deployment และ Pods
 
 ```bash
 kubectl get deployments,pods -n id-589 -o wide
 ```
 
-### 7.3 ตรวจสอบ Services
+### ตรวจสอบ Services
 
 ```bash
 kubectl get svc -n id-589
 ```
 
-### 7.4 ตรวจสอบ Persistent Storage
+### ตรวจสอบ Persistent Storage
 
 ```bash
 kubectl get pv,pvc -n id-589
 ```
 
-### 7.5 ตรวจสอบ Ingress
+### ตรวจสอบ Ingress
 
 ```bash
 kubectl get ingress -n id-589
 ```
 
-### 7.6 เรียกใช้งาน Verification Script
+### ตรวจสอบสถานะ Application ด้วย Script
 
 ```bash
-./scripts/verify.sh
+bash scripts/verify.sh
 ```
 
-### 7.7 ทดสอบการเข้าถึงเว็บไซต์ผ่าน Load Balancer
+### ทดสอบ HTTP ผ่าน External Load Balancer
 
 ทดสอบหน้า Dashboard
 
@@ -329,85 +313,18 @@ curl -I -H "Host: www.id-589.com" \
 http://192.168.190.200/research
 ```
 
----
-
-## 8. สรุป URL สำหรับเข้าใช้งานระบบ (Application Access)
-
-| บริการ | URL | รายละเอียด |
-|---|---|---|
-| Dashboard | http://www.id-589.com/ | หน้า Dashboard หลัก |
-| About Me | http://www.id-589.com/about/ | หน้าแนะนำตัว |
-| Research | http://www.id-589.com/research | หน้านำเสนอข้อมูลการศึกษาและงานวิจัย |
-| API | http://www.id-589.com/api/Hello%20Kubernetes | ทดสอบเรียกใช้งาน API |
-| Admin | http://admin.id-589.com/edit | หน้า Admin สำหรับจัดการข้อมูล Research |
-
----
-
-## 9. การแก้ไขปัญหาเบื้องต้น (Troubleshooting)
-
-### 9.1 ตรวจสอบสถานะ Pods
+ทดสอบหน้า Admin
 
 ```bash
-kubectl get pods -n id-589 -o wide
-```
-
-### 9.2 ตรวจสอบรายละเอียด Pod
-
-```bash
-kubectl describe pod <POD_NAME> -n id-589
-```
-
-### 9.3 ตรวจสอบ Application Logs
-
-```bash
-kubectl logs <POD_NAME> -n id-589
-```
-
-### 9.4 ตรวจสอบ NGINX Ingress Controller
-
-```bash
-kubectl get pods -n ingress-nginx
-```
-
-### 9.5 ตรวจสอบ Ingress Configuration
-
-```bash
-kubectl describe ingress app-ingress -n id-589
-```
-
-### 9.6 Restart Application Deployment
-
-ตัวอย่างการ Restart App About
-
-```bash
-kubectl rollout restart deployment/app-about -n id-589
+curl -I -H "Host: admin.id-589.com" \
+http://192.168.190.200/edit
 ```
 
 ---
 
-## 10. การลบระบบ (Cleanup)
-
-หากต้องการลบ Resource ของโครงงานออกจาก Kubernetes Cluster สามารถใช้คำสั่ง
-
-```bash
-kubectl delete namespace id-589
-```
-
-**หมายเหตุ:** การลบ Namespace จะทำให้ Resource ทั้งหมดภายใน Namespace ถูกลบ รวมถึง PVC ที่เกี่ยวข้อง ควรสำรองข้อมูลสำคัญก่อนดำเนินการ และตรวจสอบ Reclaim Policy ของ PV ก่อนทุกครั้ง
-
----
-
-## 11. GitHub Repository
-
-Source Code และไฟล์ Configuration ของโครงงานสามารถเข้าถึงได้จาก GitHub Repository
-
-**Repository:**  
+**GitHub Repository:**  
 https://github.com/Panyapatkia/k8s-589
 
----
-
-## 12. ผู้จัดทำ (Project Author)
-
-**ชื่อ:** Panyapat Sungrung  
+**ผู้จัดทำ:** Panyapat Sungrung  
 **รหัสนักศึกษา:** 68130589  
 **รายวิชา:** CT665 Kubernetes Ingress
