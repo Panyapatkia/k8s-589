@@ -1,10 +1,8 @@
-# โครงงาน Kubernetes Ingress – ID 589
+# Assignment Kubernetes Ingress – ID 589
 
-**รายวิชา:** CT665 Kubernetes Ingress  
-**ชื่อโครงงาน:** การพัฒนาและติดตั้งระบบเว็บแอปพลิเคชันหลายบริการบน Kubernetes ด้วย NGINX Ingress Controller  
+**รายวิชา:** CT665 Kubernetes
 **ผู้จัดทำ:** Panyapat Sungrung  
-**รหัสนักศึกษา:** 589
-
+**รหัสนักศึกษา:** 68130589
 ---
 
 ## 1. ภาพรวมโครงงาน (Project Overview)
