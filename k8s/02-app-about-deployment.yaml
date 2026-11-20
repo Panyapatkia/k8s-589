@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-about
+  namespace: id-589
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: app-about
+  template:
+    metadata:
+      labels:
+        app: app-about
+    spec:
+      containers:
+        - name: app-about
+          image: nginx:1.27-alpine
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: app-about-content
+              mountPath: /usr/share/nginx/html
+      volumes:
+        - name: app-about-content
+          configMap:
+            name: app-about-files
+            items:
+              - key: index.html
+                path: index.html
+              - key: about-index.html
+                path: about/index.html
+              - key: profile.png
+                path: about/profile.png
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: svc-about
+  namespace: id-589
+spec:
+  type: ClusterIP
+  selector:
+    app: app-about
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+      protocol: TCP

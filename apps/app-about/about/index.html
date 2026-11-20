@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>About | Panyapat</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#080d18;color:#edf4ff;font:16px/1.7 Inter,"Noto Sans Thai",system-ui}
+.wrap{width:min(900px,92%);margin:55px auto}
+.card{margin-top:25px;padding:30px;background:#101a2b;border:1px solid #24334b;border-radius:22px;display:grid;grid-template-columns:260px 1fr;gap:30px;align-items:center}
+.photo{width:100%;border-radius:16px;aspect-ratio:1;object-fit:cover}
+.muted{color:#9aabc2}h1{font-size:36px;line-height:1.2}
+.pill{display:inline-block;padding:6px 12px;border:1px solid #35506d;border-radius:99px;color:#b8d8f7;margin:5px}
+@media(max-width:650px){.card{grid-template-columns:1fr}.photo{max-width:260px}}
+</style>
+</head>
+<body>
+<main class="wrap">
+
+<style>
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 18px 9px 9px;
+  margin-bottom: 8px;
+  color: #dbeafe;
+  text-decoration: none;
+  background: #111d30;
+  border: 1px solid #293f5c;
+  border-radius: 50px;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all .25s ease;
+}
+.back-link:hover {
+  background: #1b3452;
+  border-color: #38bdf8;
+  transform: translateX(-3px);
+  color: #67e8f9;
+}
+.back-icon {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  background: #1e3552;
+  border-radius: 50%;
+  color: #67e8f9;
+  font-size: 18px;
+}
+.back-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.35;
+}
+.back-text small {
+  color: #8296b1;
+  font-size: 10px;
+  font-weight: 400;
+}
+</style>
+<a class="back-link" href="/">
+  <span class="back-icon">←</span>
+  <span class="back-text">
+    Back to Dashboard
+    <small>Return to Home</small>
+  </span>
+</a>
+
+<section class="card">
+<img class="photo" src="/about/profile.png" alt="รูปนักศึกษา">
+<div>
+<div class="muted">ABOUT THE STUDENT</div>
+<h1>Panyapat Sungrung</h1>
+<p class="muted">นักศึกษาวิศวกรรมคอมพิวเตอร์ ผู้สนใจเทคโนโลยี Cloud Infrastructure, Virtualization, Kubernetes และระบบจัดเก็บข้อมูล</p>
+<span class="pill">Student ID: 68130589</span>
+<span class="pill">Computer Engineering</span>
+<span class="pill">Kubernetes Assignment</span>
+</div>
+</section>
+</main>
+</body>
+</html>

@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Container images and archives
+*.tar
+*.tar.gz
+*.oci
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+id_rsa
+id_ed25519
+
+# Logs and temporary files
+*.log
+*.tmp
+.DS_Store
+Thumbs.db
