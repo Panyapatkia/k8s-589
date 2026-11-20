@@ -411,5 +411,5 @@ https://github.com/Panyapatkia/k8s-589
 ## 12. ผู้จัดทำ (Project Author)
 
 **ชื่อ:** Panyapat Sungrung  
-**รหัสนักศึกษา:** 589  
+**รหัสนักศึกษา:** 68130589  
 **รายวิชา:** CT665 Kubernetes Ingress
